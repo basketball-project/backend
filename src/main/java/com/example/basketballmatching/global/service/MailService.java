@@ -3,7 +3,7 @@ package com.example.basketballmatching.global.service;
 
 import com.example.basketballmatching.global.dto.SendMailResponse;
 import com.example.basketballmatching.global.exception.CustomException;
-import com.example.basketballmatching.user.entity.User;
+import com.example.basketballmatching.user.entity.UserEntity;
 import com.example.basketballmatching.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -85,11 +85,11 @@ public class MailService {
             throw new CustomException(INVALID_AUTH_CODE);
         }
 
-        User user = userRepository.findByEmail(email)
+        UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND));
 
-        user.changeEmailAuth();
-        userRepository.save(user);
+        userEntity.changeEmailAuth();
+        userRepository.save(userEntity);
 
         redisService.deleteData(EMAIL_PREFIX + email);
 

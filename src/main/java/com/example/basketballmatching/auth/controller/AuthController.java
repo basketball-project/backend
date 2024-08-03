@@ -1,11 +1,16 @@
 package com.example.basketballmatching.auth.controller;
 
+import com.example.basketballmatching.auth.dto.SignInDto;
 import com.example.basketballmatching.auth.dto.SignUpDto;
+import com.example.basketballmatching.auth.dto.TokenDto;
 import com.example.basketballmatching.auth.service.AuthService;
 import com.example.basketballmatching.global.dto.SendMailRequest;
 import com.example.basketballmatching.global.dto.VerifyMailRequest;
 import com.example.basketballmatching.global.service.MailService;
+import com.example.basketballmatching.user.dto.UserDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +44,22 @@ public class AuthController {
     public ResponseEntity<?> sendVerifyMail(@RequestBody VerifyMailRequest request) {
         mailService.verifyEmail(request.getEmail(), request.getCode());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/signIn")
+    public ResponseEntity<?> signIn(
+            @RequestBody @Valid SignInDto.Request request
+            ) {
+
+        UserDto userDto = authService.signIn(request);
+
+        TokenDto token = authService.getToken(userDto);
+
+
+        return ResponseEntity.ok()
+                .body(SignInDto.Response.fromDto(userDto,
+                        token.getRefreshToken()));
+
     }
 
 }
