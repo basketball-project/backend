@@ -50,6 +50,8 @@ public class SignInDto {
 
         private String position;
 
+        private String refreshToken;
+
         public static Response fromDto(UserDto userDto, String refreshToken) {
 
             return Response.builder()
@@ -63,6 +65,7 @@ public class SignInDto {
                     .genderType(userDto.getGenderType())
                     .userType(userDto.getUserType())
                     .position(userDto.getPosition())
+                    .refreshToken(refreshToken)
                     .build();
 
         }

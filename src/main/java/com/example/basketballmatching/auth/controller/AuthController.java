@@ -55,8 +55,13 @@ public class AuthController {
 
         TokenDto token = authService.getToken(userDto);
 
+        HttpHeaders responseAccessToken = new HttpHeaders();
+
+        responseAccessToken.set("Authorization", token.getAccessToken());
+
 
         return ResponseEntity.ok()
+                .header(String.valueOf(responseAccessToken))
                 .body(SignInDto.Response.fromDto(userDto,
                         token.getRefreshToken()));
 

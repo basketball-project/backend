@@ -1,6 +1,7 @@
 package com.example.basketballmatching.auth.security;
 
 
+import com.example.basketballmatching.global.exception.CustomException;
 import com.example.basketballmatching.global.service.RedisService;
 import com.example.basketballmatching.user.UserService;
 import com.example.basketballmatching.user.type.UserType;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+
+import static com.example.basketballmatching.global.exception.ErrorCode.*;
 
 @Slf4j
 @Component
@@ -108,16 +111,18 @@ public class TokenProvider {
         try {
             Claims claims = parseClaims(token);
             return !claims.getExpiration().before(new Date());
+        } catch (SecurityException | MalformedJwtException e) {
+          log.error("Invalid JWT Token: {}" + e.getMessage());
+          throw new CustomException(INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
-            throw new JwtException("토큰 인증 시간이 만료되었습니다.");
+            log.info("JWT token is expired: {}", e.getMessage());
+            throw new CustomException(EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            throw new JwtException("지원하지 않는 토큰입니다.");
+            log.info("JWT token is unsupported", e.getMessage());
+            throw new CustomException(UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
-            throw new JwtException("잘못된 토큰입니다.");
-        } catch (MalformedJwtException e) {
-            throw new JwtException("토큰 유형이 잘못되었습니다.");
-        } catch (JwtException e) {
-            throw new JwtException(e.getMessage());
+            log.info("JWT token is wrong type: {}", e.getMessage());
+            throw new CustomException(WRONG_TYPE_TOKEN);
         }
     }
     public String getUsername(String token) {
