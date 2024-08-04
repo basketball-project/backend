@@ -1,7 +1,7 @@
 package com.example.basketballmatching.auth.dto;
 
 
-import com.example.basketballmatching.user.entity.User;
+import com.example.basketballmatching.user.entity.UserEntity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -37,17 +37,17 @@ public class SignUpDto {
 
 
 
-    public static SignUpDto fromEntity(User user) {
+    public static SignUpDto fromEntity(UserEntity userEntity) {
 
         return SignUpDto.builder()
-                .loginId(user.getLoginId())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .userType(String.valueOf(user.getUserType()))
-                .genderType(String.valueOf(user.getGenderType()))
-                .position(String.valueOf(user.getPosition()))
+                .loginId(userEntity.getLoginId())
+                .password(userEntity.getPassword())
+                .email(userEntity.getEmail())
+                .name(userEntity.getName())
+                .phone(userEntity.getPhone())
+                .userType(String.valueOf(userEntity.getUserType()))
+                .genderType(String.valueOf(userEntity.getGenderType()))
+                .position(String.valueOf(userEntity.getPosition()))
                 .build();
     }
 
