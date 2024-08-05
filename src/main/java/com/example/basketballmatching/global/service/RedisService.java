@@ -25,6 +25,10 @@ public class RedisService {
         valueOperations.set(key, value, Duration.ofMillis(expiredTime));
     }
 
+    public void findByLoginId(String id) {
+        redisTemplate.opsForValue().get(id);
+    }
+
     public boolean existData(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
