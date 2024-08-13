@@ -7,10 +7,10 @@ import com.example.basketballmatching.auth.service.AuthService;
 import com.example.basketballmatching.global.dto.SendMailRequest;
 import com.example.basketballmatching.global.dto.VerifyMailRequest;
 import com.example.basketballmatching.global.service.MailService;
+import com.example.basketballmatching.user.service.UserService;
 import com.example.basketballmatching.user.dto.UserDto;
 import com.example.basketballmatching.user.entity.UserEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +31,8 @@ public class AuthController {
     private final AuthService authService;
 
     private final MailService mailService;
+
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<?> signUpMember(@RequestBody SignUpDto request) {
@@ -76,6 +78,22 @@ public class AuthController {
         authService.logOut(request, userEntity);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, @AuthenticationPrincipal UserEntity userEntity) {
+
+        TokenDto tokenDto = authService.refreshToken(request, userEntity);
+
+        UserDto userInfo = userService.getUserInfo(tokenDto.getLoginId());
+
+        HttpHeaders responseHeader = new HttpHeaders();
+
+        responseHeader.set("Authorization", tokenDto.getAccessToken());
+
+        return ResponseEntity.ok()
+                .headers(responseHeader)
+                .body(SignInDto.Response.fromDto(userInfo, tokenDto.getRefreshToken()));
     }
 
 }

@@ -3,7 +3,7 @@ package com.example.basketballmatching.auth.security;
 
 import com.example.basketballmatching.global.exception.CustomException;
 import com.example.basketballmatching.global.service.RedisService;
-import com.example.basketballmatching.user.UserService;
+import com.example.basketballmatching.user.service.UserService;
 import com.example.basketballmatching.user.type.UserType;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -171,6 +171,8 @@ public class TokenProvider {
     public void addToLogOutList(String token) {
         this.logOut.add(token);
     }
+
+
 
 
 

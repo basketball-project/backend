@@ -49,7 +49,6 @@ public class AuthService {
                         .password(passwordEncoder.encode(request.getPassword()))
                         .email(request.getEmail())
                         .name(request.getName())
-                        .phone(request.getPhone())
                         .birth(LocalDate.now())
                         .userType(UserType.USER)
                         .genderType(GenderType.valueOf(request.getGenderType()))

@@ -53,7 +53,6 @@ public class SignUpDto {
                 .password(userEntity.getPassword())
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
-                .phone(userEntity.getPhone())
                 .birth(userEntity.getBirth())
                 .userType(String.valueOf(userEntity.getUserType()))
                 .genderType(String.valueOf(userEntity.getGenderType()))

@@ -1,7 +1,6 @@
-package com.example.basketballmatching.user;
+package com.example.basketballmatching.user.service;
 
 import com.example.basketballmatching.global.exception.CustomException;
-import com.example.basketballmatching.global.exception.ErrorCode;
 import com.example.basketballmatching.user.dto.UserDto;
 import com.example.basketballmatching.user.entity.UserEntity;
 import com.example.basketballmatching.user.repository.UserRepository;
