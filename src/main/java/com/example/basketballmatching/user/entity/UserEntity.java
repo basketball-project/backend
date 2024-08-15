@@ -1,6 +1,7 @@
 package com.example.basketballmatching.user.entity;
 
 
+import com.example.basketballmatching.user.oauth2.dto.EditDto;
 import com.example.basketballmatching.user.type.GenderType;
 import com.example.basketballmatching.user.type.Position;
 import com.example.basketballmatching.user.type.UserType;
@@ -41,8 +42,6 @@ public class UserEntity implements UserDetails {
     private String email;
 
 
-    private String phone;
-
     private String name;
 
     private String nickname;
@@ -68,10 +67,39 @@ public class UserEntity implements UserDetails {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    private LocalDateTime deletedAt;
+
     private String refreshToken;
 
     public void changeEmailAuth() {
         this.emailAuth = true;
+    }
+
+    public void edit(EditDto.Request request) {
+
+        if (this.name != null) {
+            this.name = request.getName();
+        }
+
+        if (this.nickname != null) {
+            this.nickname = request.getNickname();
+        }
+
+        if (this.genderType != null) {
+            this.genderType = GenderType.valueOf(request.getGender());
+        }
+
+        if (this.position != null) {
+            this.position = Position.valueOf(request.getPosition());
+        }
+
+
+    }
+
+    public void passwordEdit(String password) {
+        if (!password.isEmpty()) {
+            this.password = password;
+        }
     }
 
 

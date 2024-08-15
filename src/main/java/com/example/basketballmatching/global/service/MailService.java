@@ -33,6 +33,8 @@ public class MailService {
 
     private static final String EMAIL_PREFIX = "Email-Auth: ";
 
+    private static final String PASSWORD_SUBJECT = "임시 비밀번호 입니다.";
+
 
     public SendMailResponse sendAuthMail(String email) {
 
@@ -85,7 +87,7 @@ public class MailService {
             throw new CustomException(INVALID_AUTH_CODE);
         }
 
-        UserEntity userEntity = userRepository.findByEmail(email)
+        UserEntity userEntity = userRepository.findByEmailAndDeletedAtNull(email)
                 .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND));
 
         userEntity.changeEmailAuth();
@@ -117,6 +119,46 @@ public class MailService {
 
 
         return data.equals(code);
+    }
+
+    public boolean TemporaryPassword(String email, String newPassword) {
+
+        try {
+
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);
+
+            String temporaryPassword = getTemporaryPassword(newPassword);
+
+            messageHelper.setTo(email);
+            messageHelper.setSubject(PASSWORD_SUBJECT);
+            messageHelper.setText(temporaryPassword, true);
+
+            javaMailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    private String getTemporaryPassword(String newPassword) {
+        String certificationMessage = "";
+        certificationMessage +=
+                "<h1 style='text-align: center;'>"
+                        + "[HOOPS] 임시 비밀번호 발송"
+                        + "</h1>";
+        certificationMessage +=
+                "<h3 style='text-align: center;'>"
+                        + "임시 비밀번호 : " + newPassword
+                        + "</h3>"
+                        + "<h4 style='text-align: center;'>"
+                        + "임시 비밀번호로 로그인 후 비밀번호를 꼭 변경해주세요."
+                        + "</h4>";
+
+        return certificationMessage;
     }
 
 

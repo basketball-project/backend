@@ -7,8 +7,10 @@ import com.example.basketballmatching.auth.dto.TokenDto;
 import com.example.basketballmatching.auth.security.TokenProvider;
 import com.example.basketballmatching.global.exception.CustomException;
 import com.example.basketballmatching.global.service.RedisService;
+import com.example.basketballmatching.user.dto.DeleteUserDto;
 import com.example.basketballmatching.user.dto.UserDto;
 import com.example.basketballmatching.user.entity.UserEntity;
+import com.example.basketballmatching.user.oauth2.dto.EditDto;
 import com.example.basketballmatching.user.repository.UserRepository;
 import com.example.basketballmatching.user.type.GenderType;
 import com.example.basketballmatching.user.type.Position;
@@ -38,7 +40,11 @@ public class AuthService {
     private final RedisService redisService;
 
     public SignUpDto signUp(SignUpDto request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailAndDeletedAtNull(request.getEmail())) {
+            throw new CustomException(ALREADY_EXIST_USER);
+        }
+
+        if (userRepository.existsByLoginIdAndDeletedAtNull(request.getLoginId())) {
             throw new CustomException(ALREADY_EXIST_USER);
         }
 
@@ -49,6 +55,7 @@ public class AuthService {
                         .password(passwordEncoder.encode(request.getPassword()))
                         .email(request.getEmail())
                         .name(request.getName())
+                        .nickname(request.getNickname())
                         .birth(LocalDate.now())
                         .userType(UserType.USER)
                         .genderType(GenderType.valueOf(request.getGenderType()))
@@ -62,7 +69,7 @@ public class AuthService {
     }
 
     public UserDto signIn(SignInDto.Request request) {
-        UserEntity user = userRepository.findByLoginId(request.getLoginId())
+        UserEntity user = userRepository.findByLoginIdAndDeletedAtNull(request.getLoginId())
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -113,7 +120,7 @@ public class AuthService {
             throw new CustomException(NOT_FOUND_TOKEN);
         }
 
-        userRepository.findByLoginId(loginId)
+        userRepository.findByLoginIdAndDeletedAtNull(loginId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         String accessToken = tokenProvider.createAccessToken(loginId, email, userType);
@@ -141,6 +148,60 @@ public class AuthService {
 
         tokenProvider.addToLogOutList(accessToken);
 
+    }
+
+    public UserDto getUserInfo(HttpServletRequest request, UserEntity userEntity) {
+
+        isSameLoginId(request, userEntity);
+
+        return UserDto.fromEntity(userEntity);
+    }
+
+    public UserDto editUserInfo(HttpServletRequest request, EditDto.Request editDto, UserEntity user) {
+
+        isSameLoginId(request, user);
+
+        if (editDto.getPassword() != null) {
+            String encode = passwordEncoder.encode(editDto.getPassword());
+            user.passwordEdit(encode);
+        }
+
+        user.edit(editDto);
+
+        userRepository.save(user);
+
+        return UserDto.fromEntity(user);
+
+    }
+
+    public void deleteUser(HttpServletRequest request, DeleteUserDto deleteUserDto, UserEntity user) {
+
+        isSameLoginId(request, user);
+
+        String accessToken = validateAccessToken(request);
+
+        String refreshToken = validateRefreshToken(request);
+
+        if (!tokenMatch(accessToken, refreshToken)) {
+            throw new CustomException(INVALID_TOKEN);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (!user.getLoginId().equals(deleteUserDto.getLoginId())) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
+
+        if (!passwordEncoder.matches(deleteUserDto.getPassword(), user.getPassword())) {
+            throw new CustomException(PASSWORD_NOT_MATCH);
+        }
+
+        logOut(request, user);
+
+
+        user.setDeletedAt(now);
+
+        userRepository.save(user);
     }
 
     private String validateAccessToken(HttpServletRequest request) {
@@ -183,6 +244,19 @@ public class AuthService {
         String refreshId = refreshClaims.getSubject();
 
         return accessId.equals(refreshId);
+    }
+
+    private void isSameLoginId(HttpServletRequest request, UserEntity user) {
+        String accessToken = validateAccessToken(request);
+
+        Claims claims = tokenProvider.parseClaims(accessToken);
+
+        String loginId = claims.getSubject();
+
+        if (!user.getLoginId().equals(loginId)) {
+            throw new CustomException(INVALID_TOKEN);
+        }
+
     }
 
 }

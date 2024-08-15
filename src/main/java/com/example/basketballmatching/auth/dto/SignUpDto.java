@@ -29,8 +29,7 @@ public class SignUpDto {
     @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
-    @NotBlank(message = "휴대폰번호를 입력해주세요.")
-    private String phone;
+    private String nickname;
 
     private LocalDate birth;
 
@@ -53,6 +52,7 @@ public class SignUpDto {
                 .password(userEntity.getPassword())
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
+                .nickname(userEntity.getNickname())
                 .birth(userEntity.getBirth())
                 .userType(String.valueOf(userEntity.getUserType()))
                 .genderType(String.valueOf(userEntity.getGenderType()))
