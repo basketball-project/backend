@@ -40,7 +40,6 @@ public class SignInDto {
 
         private String name;
 
-        private String phone;
 
         private LocalDate birth;
 
@@ -60,7 +59,6 @@ public class SignInDto {
                     .password(userDto.getPassword())
                     .email(userDto.getEmail())
                     .name(userDto.getName())
-                    .phone(userDto.getPhone())
                     .birth(userDto.getBirth())
                     .genderType(userDto.getGenderType())
                     .userType(userDto.getUserType())

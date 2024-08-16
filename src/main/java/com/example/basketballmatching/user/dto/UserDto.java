@@ -4,6 +4,7 @@ import com.example.basketballmatching.user.entity.UserEntity;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -23,7 +24,7 @@ public class UserDto {
 
     private String name;
 
-    private String phone;
+    private String nickname;
 
     private LocalDate birth;
 
@@ -35,6 +36,9 @@ public class UserDto {
 
     private boolean emailAuth;
 
+    private LocalDateTime createdAt;
+
+
     public static UserDto fromEntity(UserEntity userEntity) {
 
         return UserDto.builder()
@@ -43,12 +47,13 @@ public class UserDto {
                 .password(userEntity.getPassword())
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
-                .phone(userEntity.getPhone())
+                .nickname(userEntity.getNickname())
                 .birth(userEntity.getBirth())
                 .genderType(String.valueOf(userEntity.getGenderType()))
                 .userType(String.valueOf(userEntity.getUserType()))
                 .position(String.valueOf(userEntity.getPosition()))
                 .emailAuth(userEntity.isEmailAuth())
+                .createdAt(userEntity.getCreatedAt())
                 .build();
     }
 
