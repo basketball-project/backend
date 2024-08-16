@@ -8,11 +8,15 @@ import com.example.basketballmatching.global.dto.SendMailRequest;
 import com.example.basketballmatching.global.dto.VerifyMailRequest;
 import com.example.basketballmatching.global.service.MailService;
 import com.example.basketballmatching.user.dto.UserDto;
+import com.example.basketballmatching.user.entity.UserEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,23 +52,30 @@ public class AuthController {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(
-            @RequestBody @Valid SignInDto.Request request
+            @RequestBody @Validated SignInDto.Request request
             ) {
 
         UserDto userDto = authService.signIn(request);
 
         TokenDto token = authService.getToken(userDto);
 
-        HttpHeaders responseAccessToken = new HttpHeaders();
+        HttpHeaders responseHeader = new HttpHeaders();
 
-        responseAccessToken.set("Authorization", token.getAccessToken());
+        responseHeader.set("Authorization", token.getAccessToken());
 
 
         return ResponseEntity.ok()
-                .header(String.valueOf(responseAccessToken))
+                .headers(responseHeader)
                 .body(SignInDto.Response.fromDto(userDto,
                         token.getRefreshToken()));
 
+    }
+
+    @PostMapping("/logOut")
+    public ResponseEntity<?> logOut(HttpServletRequest request, @AuthenticationPrincipal UserEntity userEntity) {
+        authService.logOut(request, userEntity);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }
