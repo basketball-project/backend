@@ -19,7 +19,7 @@ public enum ErrorCode {
     ALREADY_LOGOUT(HttpStatus.BAD_REQUEST.value(), "이미 로그아웃 하였습니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST.value(), "필수 입력 값이 누락되었습니다."),
     INVALID_PATTERN(HttpStatus.BAD_REQUEST.value(), "형식에 맞게 입력 해야합니다."),
-
+    MAIL_SEND_FAIL(HttpStatus.BAD_REQUEST.value(), "이메일 전송에 실패하였습니다."),
 
     // server
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다."),
