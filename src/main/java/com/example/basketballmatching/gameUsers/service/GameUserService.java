@@ -1,15 +1,22 @@
 package com.example.basketballmatching.gameUsers.service;
 
 
-import com.example.basketballmatching.game.entity.GameEntity;
-import com.example.basketballmatching.game.type.CityName;
-import com.example.basketballmatching.game.type.FieldStatus;
-import com.example.basketballmatching.game.type.Gender;
-import com.example.basketballmatching.game.type.MatchFormat;
+import com.example.basketballmatching.auth.security.JwtTokenExtract;
+import com.example.basketballmatching.gameCreator.entity.GameEntity;
+import com.example.basketballmatching.gameCreator.type.CityName;
+import com.example.basketballmatching.gameCreator.type.FieldStatus;
+import com.example.basketballmatching.gameCreator.type.Gender;
+import com.example.basketballmatching.gameCreator.type.MatchFormat;
 import com.example.basketballmatching.gameUsers.dto.GameSearchDto;
+import com.example.basketballmatching.gameUsers.dto.ParticipantGameDto;
+import com.example.basketballmatching.gameUsers.entity.ParticipantGame;
 import com.example.basketballmatching.gameUsers.repository.GameSpecification;
 import com.example.basketballmatching.gameUsers.repository.GameUserRepository;
-import lombok.AllArgsConstructor;
+import com.example.basketballmatching.gameUsers.repository.ParticipantGameRepository;
+import com.example.basketballmatching.gameUsers.type.ParticipantGameStatus;
+import com.example.basketballmatching.global.exception.CustomException;
+import com.example.basketballmatching.user.entity.UserEntity;
+import com.example.basketballmatching.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,12 +27,24 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.basketballmatching.gameCreator.type.Gender.FEMALEONLY;
+import static com.example.basketballmatching.gameCreator.type.Gender.MALEONLY;
+import static com.example.basketballmatching.global.exception.ErrorCode.*;
+import static com.example.basketballmatching.user.type.GenderType.FEMALE;
+import static com.example.basketballmatching.user.type.GenderType.MALE;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class GameUserService {
 
     private final GameUserRepository gameUserRepository;
+    private final JwtTokenExtract jwtTokenExtract;
+    private final UserRepository userRepository;
+    private final ParticipantGameRepository participantGameRepository;
+
+
+
 
     public List<GameSearchDto> findFilteredGame(
             LocalDate localDate,
@@ -41,7 +60,7 @@ public class GameUserService {
 
 
 
-        return getGameSearch(gameListNow);
+        return getGameSearch(gameListNow, null);
 
     }
 
@@ -51,8 +70,61 @@ public class GameUserService {
                         address, LocalDateTime.now()
                 );
 
-        return getGameSearch(gameEntities);
+        Integer userId = null;
+
+        return getGameSearch(gameEntities, userId);
     }
+
+
+    public ParticipantGameDto participantGame(Integer gameId) {
+        Integer userId = jwtTokenExtract.currentUser().getUserId();
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        GameEntity game = gameUserRepository.findById(gameId)
+                .orElseThrow(() -> new CustomException(GAME_NOT_FOUND));
+
+
+        validateParticipant(user, game);
+
+        game.countApplicant();
+
+        gameUserRepository.save(game);
+
+        return ParticipantGameDto.fromEntity(participantGameRepository.save(
+                ParticipantGame.builder()
+                        .status(ParticipantGameStatus.APPLY)
+                        .createdDateTime(LocalDateTime.now())
+                        .gameEntity(game)
+                        .userEntity(user)
+                        .build()
+        ));
+
+    }
+
+    private void validateParticipant(UserEntity user, GameEntity game) {
+        if (participantGameRepository.existsByUserEntity_UserIdAndGameEntity_GameId(user.getUserId(), game.getGameId())) {
+            throw new CustomException(ALREADY_PARTICIPANT_USER);
+        }
+
+        if (game.getApplicantNum() >= game.getHeadCount()) {
+            throw new CustomException(FULL_PEOPLE_GAME);
+        }
+
+        if (game.getStartDateTime().isBefore(LocalDateTime.now())) {
+            throw new CustomException(OVER_TIME_GAME);
+        }
+
+        if (game.getGender().equals(MALEONLY) && user.getGenderType().equals(FEMALE)) {
+            throw new CustomException(ONLY_MALE_GAME);
+        }
+
+        if (game.getGender().equals(FEMALEONLY) && user.getGenderType().equals(MALE)) {
+            throw new CustomException(ONLY_FEMALE_GAME);
+        }
+    }
+
 
     private static Specification<GameEntity> getGameEntitySpec(
             LocalDate localDate,
@@ -92,17 +164,20 @@ public class GameUserService {
         return specification;
     }
 
+
     private static List<GameSearchDto> getGameSearch(
-            List<GameEntity> gameListNow) {
+            List<GameEntity> gameListNow, Integer userId) {
 
         log.info("경기 리스트 조회 시작");
 
         List<GameSearchDto> gameList = new ArrayList<>();
 
         gameListNow.forEach((e) ->
-                gameList.add(GameSearchDto.of(e)));
+                gameList.add(GameSearchDto.of(e, userId)));
 
         return  gameList;
     }
+
+
 
 }

@@ -1,19 +1,19 @@
 package com.example.basketballmatching.gameUsers.controller;
 
 
-import com.example.basketballmatching.game.type.CityName;
-import com.example.basketballmatching.game.type.FieldStatus;
-import com.example.basketballmatching.game.type.Gender;
-import com.example.basketballmatching.game.type.MatchFormat;
+import com.example.basketballmatching.gameCreator.type.CityName;
+import com.example.basketballmatching.gameCreator.type.FieldStatus;
+import com.example.basketballmatching.gameCreator.type.Gender;
+import com.example.basketballmatching.gameCreator.type.MatchFormat;
 import com.example.basketballmatching.gameUsers.dto.GameSearchDto;
+import com.example.basketballmatching.gameUsers.dto.UserJoinGameDto;
 import com.example.basketballmatching.gameUsers.service.GameUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -51,4 +51,16 @@ public class GameUserController {
                 gameUserService.searchAddress(address)
         );
     }
+
+
+    @PostMapping("/participant")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public UserJoinGameDto.Response participantGame(
+            @RequestBody @Validated UserJoinGameDto.Request request
+    ) {
+        return UserJoinGameDto.Response.from(
+                gameUserService.participantGame(request.getGameId())
+        );
+    }
+
 }

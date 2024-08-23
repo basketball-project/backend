@@ -1,10 +1,10 @@
 package com.example.basketballmatching.gameUsers.repository;
 
-import com.example.basketballmatching.game.entity.GameEntity;
-import com.example.basketballmatching.game.type.CityName;
-import com.example.basketballmatching.game.type.FieldStatus;
-import com.example.basketballmatching.game.type.Gender;
-import com.example.basketballmatching.game.type.MatchFormat;
+import com.example.basketballmatching.gameCreator.entity.GameEntity;
+import com.example.basketballmatching.gameCreator.type.CityName;
+import com.example.basketballmatching.gameCreator.type.FieldStatus;
+import com.example.basketballmatching.gameCreator.type.Gender;
+import com.example.basketballmatching.gameCreator.type.MatchFormat;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;

@@ -56,7 +56,7 @@ public class AuthController {
             @RequestBody @Validated SignInDto.Request request
             ) {
 
-        UserDto userDto = authService.signIn(request);
+        UserDto userDto = authService.LogInUser(request);
 
         TokenDto token = authService.getToken(userDto);
 
