@@ -36,4 +36,5 @@
 >   - Elasticache
 
 ### ERD
+![ERD01](https://github.com/user-attachments/assets/e9a1f080-b8c4-493a-babd-3687ffb696a3)
 
