@@ -29,6 +29,8 @@ import java.util.List;
 
 import static com.example.basketballmatching.gameCreator.type.Gender.FEMALEONLY;
 import static com.example.basketballmatching.gameCreator.type.Gender.MALEONLY;
+import static com.example.basketballmatching.gameUsers.type.ParticipantGameStatus.ACCEPT;
+import static com.example.basketballmatching.gameUsers.type.ParticipantGameStatus.CANCEL;
 import static com.example.basketballmatching.global.exception.ErrorCode.*;
 import static com.example.basketballmatching.user.type.GenderType.FEMALE;
 import static com.example.basketballmatching.user.type.GenderType.MALE;
@@ -88,7 +90,6 @@ public class GameUserService {
 
         validateParticipant(user, game);
 
-        game.countApplicant();
 
         gameUserRepository.save(game);
 
@@ -100,6 +101,31 @@ public class GameUserService {
                         .userEntity(user)
                         .build()
         ));
+
+    }
+
+    public ParticipantGameDto participantCancelGame(Integer gameId) {
+
+        Integer userId = jwtTokenExtract.currentUser().getUserId();
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        GameEntity game = gameUserRepository.findById(gameId)
+                .orElseThrow(() -> new CustomException(GAME_NOT_FOUND));
+
+        ParticipantGame participantGame = participantGameRepository.findByUserEntityAndGameEntity(user, game)
+                .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+
+        if (participantGame.getStatus().equals(ACCEPT) && game.getStartDateTime().isBefore(LocalDateTime.now().plusMinutes(10))) {
+            throw new CustomException(CANCELLATION_NOT_ALLOWED);
+        }
+
+        participantGame.setStatus(CANCEL);
+        participantGame.setCancelDateTime(LocalDateTime.now());
+        participantGameRepository.save(participantGame);
+
+        return ParticipantGameDto.fromEntity(participantGame);
 
     }
 

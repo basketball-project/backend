@@ -6,6 +6,7 @@ import com.example.basketballmatching.gameCreator.type.FieldStatus;
 import com.example.basketballmatching.gameCreator.type.Gender;
 import com.example.basketballmatching.gameCreator.type.MatchFormat;
 import com.example.basketballmatching.gameUsers.dto.GameSearchDto;
+import com.example.basketballmatching.gameUsers.dto.UserCancelGameDto;
 import com.example.basketballmatching.gameUsers.dto.UserJoinGameDto;
 import com.example.basketballmatching.gameUsers.service.GameUserService;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,16 @@ public class GameUserController {
     ) {
         return UserJoinGameDto.Response.from(
                 gameUserService.participantGame(request.getGameId())
+        );
+    }
+
+    @PostMapping("/participant/cancel")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public UserCancelGameDto.Response participantCancelGame(
+            @RequestBody @Validated UserCancelGameDto.Request request
+    ) {
+        return UserCancelGameDto.Response.from(
+                gameUserService.participantCancelGame(request.getGameId())
         );
     }
 

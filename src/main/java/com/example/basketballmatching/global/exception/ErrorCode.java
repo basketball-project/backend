@@ -43,7 +43,9 @@ public enum ErrorCode {
     OVER_TIME_GAME(HttpStatus.BAD_REQUEST.value(), "신청 가능한 시간이 이미 지났습니다. 더 이상 신청할 수 없습니다."),
     ONLY_FEMALE_GAME(HttpStatus.BAD_REQUEST.value(), "여성만 신청 가능한 경기 입니다."),
     ONLY_MALE_GAME(HttpStatus.BAD_REQUEST.value(), "남성만 신청 가능한 경기 입니다."),
-    ALREADY_PARTICIPANT_USER(HttpStatus.BAD_REQUEST.value(), "이미 신청한 유저입니다.");
+    ALREADY_PARTICIPANT_USER(HttpStatus.BAD_REQUEST.value(), "이미 신청한 유저입니다."),
+    PARTICIPANT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "참가한 게임을 찾을 수 없습니다."),
+    CANCELLATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "참가 취소가 불가능한 상태입니다.");
 
 
     private final int httpStatus;
