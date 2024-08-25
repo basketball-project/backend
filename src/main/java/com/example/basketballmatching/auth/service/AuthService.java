@@ -45,7 +45,7 @@ public class AuthService {
         }
 
         if (userRepository.existsByLoginIdAndDeletedAtNull(request.getLoginId())) {
-            throw new CustomException(ALREADY_EXIST_USER);
+            throw new CustomException(ALREADY_EXIST_LOGINID);
         }
 
 
@@ -68,7 +68,7 @@ public class AuthService {
 
     }
 
-    public UserDto signIn(SignInDto.Request request) {
+    public UserDto LogInUser(SignInDto.Request request) {
         UserEntity user = userRepository.findByLoginIdAndDeletedAtNull(request.getLoginId())
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 

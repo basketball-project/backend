@@ -1,7 +1,7 @@
 package com.example.basketballmatching.gameUsers.repository;
 
 
-import com.example.basketballmatching.game.entity.GameEntity;
+import com.example.basketballmatching.gameCreator.entity.GameEntity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
