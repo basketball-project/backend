@@ -3,6 +3,7 @@ package com.example.basketballmatching.gameUsers.service;
 
 import com.example.basketballmatching.auth.security.JwtTokenExtract;
 import com.example.basketballmatching.gameCreator.entity.GameEntity;
+import com.example.basketballmatching.gameCreator.entity.QGameEntity;
 import com.example.basketballmatching.gameCreator.type.CityName;
 import com.example.basketballmatching.gameCreator.type.FieldStatus;
 import com.example.basketballmatching.gameCreator.type.Gender;
@@ -10,16 +11,19 @@ import com.example.basketballmatching.gameCreator.type.MatchFormat;
 import com.example.basketballmatching.gameUsers.dto.GameSearchDto;
 import com.example.basketballmatching.gameUsers.dto.ParticipantGameDto;
 import com.example.basketballmatching.gameUsers.entity.ParticipantGame;
-import com.example.basketballmatching.gameUsers.repository.GameSpecification;
 import com.example.basketballmatching.gameUsers.repository.GameUserRepository;
 import com.example.basketballmatching.gameUsers.repository.ParticipantGameRepository;
 import com.example.basketballmatching.gameUsers.type.ParticipantGameStatus;
 import com.example.basketballmatching.global.exception.CustomException;
 import com.example.basketballmatching.user.entity.UserEntity;
 import com.example.basketballmatching.user.repository.UserRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -44,29 +48,38 @@ public class GameUserService {
     private final JwtTokenExtract jwtTokenExtract;
     private final UserRepository userRepository;
     private final ParticipantGameRepository participantGameRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
-
-
-
-    public List<GameSearchDto> findFilteredGame(
+    public Page<GameSearchDto> findFilteredGame(
             LocalDate localDate,
             CityName cityName,
             FieldStatus fieldStatus,
             Gender gender,
-            MatchFormat matchFormat) {
-
-        Specification<GameEntity> gameEntitySpec = getGameEntitySpec(localDate, cityName, fieldStatus, gender, matchFormat);
+            MatchFormat matchFormat, int page, int size) {
 
 
-        List<GameEntity> gameListNow = gameUserRepository.findAll(gameEntitySpec);
+        QGameEntity gameEntity = QGameEntity.gameEntity;
 
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.atTime(23, 59, 59);
 
+        BooleanBuilder whereClause = new BooleanBuilder();
 
-        return getGameSearch(gameListNow, null);
+        query(cityName, fieldStatus, gender, matchFormat, whereClause, gameEntity, startOfDay, endOfDay);
+
+        List<GameEntity> gameListNow = jpaQueryFactory
+                .selectFrom(gameEntity)
+                .where(whereClause)
+                .fetch();
+
+        Integer userId = null;
+        return getPageGameSearch(gameListNow, userId, page, size);
 
     }
 
-    public List<GameSearchDto> searchAddress(String address) {
+
+
+    public Page<GameSearchDto> searchAddress(String address, int page, int size) {
         List<GameEntity> gameEntities =
                 gameUserRepository.findByAddressContainsIgnoreCaseAndStartDateTimeAfterOrderByStartDateTimeAsc(
                         address, LocalDateTime.now()
@@ -74,7 +87,7 @@ public class GameUserService {
 
         Integer userId = null;
 
-        return getGameSearch(gameEntities, userId);
+        return getPageGameSearch(gameEntities, userId, page, size);
     }
 
 
@@ -152,43 +165,7 @@ public class GameUserService {
     }
 
 
-    private static Specification<GameEntity> getGameEntitySpec(
-            LocalDate localDate,
-            CityName cityName,
-            FieldStatus fieldStatus,
-            Gender gender,
-            MatchFormat matchFormat
-    ) {
 
-        log.info("경기 검색 시작");
-        Specification<GameEntity> specification = Specification.where(
-                GameSpecification.startDate(LocalDate.now())
-                        .and(GameSpecification.notDeleted())
-        );
-
-        if (localDate != null) {
-            specification = specification.and(GameSpecification.withDate(localDate)).and(GameSpecification.notDeleted());
-        };
-
-        if (cityName != null) {
-            specification = specification.and(GameSpecification.withCityName(cityName
-            ));
-        }
-
-        if (fieldStatus != null) {
-            specification = specification.and(GameSpecification.withFieldStatus(fieldStatus));
-        }
-
-        if (gender != null) {
-            specification = specification.and(GameSpecification.withGender(gender));
-        }
-
-        if (matchFormat != null) {
-            specification.and(GameSpecification.withMatchFormat(matchFormat));
-        }
-
-        return specification;
-    }
 
 
     private static List<GameSearchDto> getGameSearch(
@@ -204,6 +181,53 @@ public class GameUserService {
         return  gameList;
     }
 
+    private static Page<GameSearchDto> getPageGameSearch(
+            List<GameEntity> gameListNow, Integer userId, int page, int size
+    ) {
+
+        List<GameSearchDto> gameList = new ArrayList<>();
+
+        gameListNow.forEach(
+                (e) -> gameList.add(GameSearchDto.of(e, userId))
+        );
+
+        int totalSize = gameList.size();
+        int totalPage = (int) Math.ceil((double) totalSize / size);
+        int lastPage = totalPage == 0 ? 1 : totalPage;
+
+        page = Math.max(1, Math.min(page, lastPage));
+
+        int start = (page - 1) * size;
+        int end = Math.min(page * size, totalSize);
+
+        List<GameSearchDto> pageContent = gameList.subList(start, end);
+
+        PageRequest pageable = PageRequest.of(page - 1, size);
+
+        return new PageImpl<>(pageContent, pageable, totalSize);
+
+    }
+    private static void query(CityName cityName, FieldStatus fieldStatus, Gender gender, MatchFormat matchFormat, BooleanBuilder whereClause, QGameEntity gameEntity, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+        whereClause.and(gameEntity.deletedDateTime.isNull());
+
+        whereClause.and(gameEntity.createdDateTime.between(startOfDay, endOfDay));
+
+        if (cityName != null) {
+            whereClause.and(gameEntity.cityName.eq(cityName));
+        }
+
+        if (fieldStatus != null) {
+            whereClause.and(gameEntity.fieldStatus.eq(fieldStatus));
+        }
+
+        if (gender != null) {
+            whereClause.and(gameEntity.gender.eq(gender));
+        }
+
+        if (matchFormat != null) {
+            whereClause.and(gameEntity.matchFormat.eq(matchFormat));
+        }
+    }
 
 
 }

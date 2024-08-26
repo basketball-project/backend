@@ -9,8 +9,10 @@ import com.example.basketballmatching.gameUsers.dto.GameSearchDto;
 import com.example.basketballmatching.gameUsers.dto.UserCancelGameDto;
 import com.example.basketballmatching.gameUsers.dto.UserJoinGameDto;
 import com.example.basketballmatching.gameUsers.service.GameUserService;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -28,28 +30,30 @@ public class GameUserController {
     private final GameUserService gameUserService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<GameSearchDto>> findFilteredGame(
-            @RequestParam(required = false) LocalDate localDate,
+    public ResponseEntity<Page<GameSearchDto>> findFilteredGame(
+            @RequestParam LocalDate localDate,
             @RequestParam(required = false) CityName cityName,
             @RequestParam(required = false) FieldStatus fieldStatus,
             @RequestParam(required = false) Gender gender,
-            @RequestParam(required = false) MatchFormat matchFormat
+            @RequestParam(required = false) MatchFormat matchFormat,
+            @RequestParam(value = "page", defaultValue = "0") @Positive int page,
+            @RequestParam(value = "size", defaultValue = "5") @Positive int size
             ) {
 
         return ResponseEntity.ok(
-                gameUserService.findFilteredGame(
-                        localDate, cityName, fieldStatus, gender, matchFormat)
-        );
+                gameUserService.findFilteredGame(localDate, cityName, fieldStatus, gender, matchFormat, page, size));
     }
 
 
 
     @GetMapping("/search-address")
-    public ResponseEntity<List<GameSearchDto>> searchAddress(
-            @RequestParam String address
+    public ResponseEntity<Page<GameSearchDto>> searchAddress(
+            @RequestParam String address,
+            @RequestParam(value = "page", defaultValue = "0") @Positive int page,
+            @RequestParam(value = "size", defaultValue = "5") @Positive int size
     ) {
         return ResponseEntity.ok(
-                gameUserService.searchAddress(address)
+                gameUserService.searchAddress(address, page, size)
         );
     }
 
