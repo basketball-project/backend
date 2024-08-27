@@ -44,6 +44,12 @@ public class MailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "utf-8");
 
+        boolean exists = userRepository.existsByEmailAndDeletedAtNull(email);
+
+        if (!exists) {
+            throw new CustomException(PRECEED_SIGNUP);
+        }
+
         try {
 
             mimeMessageHelper.setTo(email);

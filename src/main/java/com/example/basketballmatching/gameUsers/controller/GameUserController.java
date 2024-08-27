@@ -78,4 +78,25 @@ public class GameUserController {
         );
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/my-current-game-list")
+    public ResponseEntity<Page<GameSearchDto>> myCurrentGameList(
+            @RequestParam(value = "page", defaultValue = "0") @Positive int page,
+            @RequestParam(value = "size", defaultValue = "5") @Positive int size
+    ) {
+        return ResponseEntity.ok(
+                gameUserService.myCurrentGameList(page, size)
+        );
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/my-last-game-list")
+    public ResponseEntity<Page<GameSearchDto>> myLastGameList(
+            @RequestParam(value = "page", defaultValue = "0") @Positive int page,
+            @RequestParam(value = "size", defaultValue = "5") @Positive int size
+    ) {
+        return ResponseEntity.ok(
+                gameUserService.myLastGameList(page, size)
+        );
+    }
 }
