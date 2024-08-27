@@ -47,6 +47,8 @@ public enum ErrorCode {
     PARTICIPANT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "참가한 게임을 찾을 수 없습니다."),
     CANCELLATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "참가 취소가 불가능한 상태입니다.")
 
+    ,ALREADY_REPORTED_USER(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.")
+
     // gameCreator
     ;
 
