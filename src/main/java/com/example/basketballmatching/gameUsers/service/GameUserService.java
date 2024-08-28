@@ -50,6 +50,42 @@ public class GameUserService {
     private final ParticipantGameRepository participantGameRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
+    public Page<GameSearchDto> myCurrentGameList(int page, int size) {
+
+        List<ParticipantGame> gameList = checkMyGameList();
+
+        List<GameEntity> games =
+                gameList.stream()
+                        .map(ParticipantGame::getGameEntity)
+                        .filter(
+                                game -> game.getStartDateTime().isAfter(LocalDateTime.now())
+                        ).toList();
+
+        Integer userId = jwtTokenExtract.currentUser().getUserId();
+
+        return getPageGameSearch(games, userId, page, size);
+
+
+    }
+
+    public Page<GameSearchDto> myLastGameList(int page, int size) {
+
+        List<ParticipantGame> gameList = checkMyGameList();
+
+        List<GameEntity> games =
+                gameList.stream()
+                        .map(ParticipantGame::getGameEntity)
+                        .filter(
+                                game -> game.getStartDateTime().isBefore(LocalDateTime.now())
+                        ).toList();
+
+        Integer userId = jwtTokenExtract.currentUser().getUserId();
+
+        return getPageGameSearch(games, userId, page, size);
+
+
+    }
+
     public Page<GameSearchDto> findFilteredGame(
             LocalDate localDate,
             CityName cityName,
@@ -227,6 +263,17 @@ public class GameUserService {
         if (matchFormat != null) {
             whereClause.and(gameEntity.matchFormat.eq(matchFormat));
         }
+    }
+
+    private List<ParticipantGame> checkMyGameList() {
+        Integer userId = jwtTokenExtract.currentUser().getUserId();
+
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        return participantGameRepository.findByUserEntity_UserIdAndStatus(
+                userEntity.getUserId(), ACCEPT).orElseThrow(() -> new CustomException(GAME_NOT_FOUND));
+
     }
 
 

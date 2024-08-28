@@ -21,6 +21,7 @@ public enum ErrorCode {
     INVALID_PATTERN(HttpStatus.BAD_REQUEST.value(), "형식에 맞게 입력 해야합니다."),
     MAIL_SEND_FAIL(HttpStatus.BAD_REQUEST.value(), "이메일 전송에 실패하였습니다."),
     ALREADY_EXIST_LOGINID(HttpStatus.BAD_REQUEST.value(), "이미 사용중인 아이디 입니다."),
+    PRECEED_SIGNUP(HttpStatus.BAD_REQUEST.value(), "회원 가입을 먼저 진행해주세요."),
 
     // server
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다."),
@@ -45,11 +46,15 @@ public enum ErrorCode {
     ONLY_MALE_GAME(HttpStatus.BAD_REQUEST.value(), "남성만 신청 가능한 경기 입니다."),
     ALREADY_PARTICIPANT_USER(HttpStatus.BAD_REQUEST.value(), "이미 신청한 유저입니다."),
     PARTICIPANT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "참가한 게임을 찾을 수 없습니다."),
-    CANCELLATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "참가 취소가 불가능한 상태입니다.")
+    CANCELLATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "참가 취소가 불가능한 상태입니다."),
 
     ,ALREADY_REPORTED_USER(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.")
 
     // gameCreator
+
+
+    // report
+    ALREADY_REPORTED(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.");
     ;
 
 
