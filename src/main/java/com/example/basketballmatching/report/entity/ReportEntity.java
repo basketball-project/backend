@@ -31,4 +31,6 @@ public class ReportEntity {
     @CreatedDate
     private LocalDateTime createdDateTime;
 
+    private LocalDateTime blackListStartDateTime;
+
 }

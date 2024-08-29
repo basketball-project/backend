@@ -22,6 +22,8 @@ public class QReportEntity extends EntityPathBase<ReportEntity> {
 
     public static final QReportEntity reportEntity = new QReportEntity("reportEntity");
 
+    public final DateTimePath<java.time.LocalDateTime> blackListStartDateTime = createDateTime("blackListStartDateTime", java.time.LocalDateTime.class);
+
     public final StringPath content = createString("content");
 
     public final DateTimePath<java.time.LocalDateTime> createdDateTime = createDateTime("createdDateTime", java.time.LocalDateTime.class);
