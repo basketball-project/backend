@@ -35,8 +35,8 @@ public enum ErrorCode {
     WRONG_TYPE_TOKEN(HttpStatus.UNAUTHORIZED.value(), "잘못된 형식의 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED.value(), "액세스 토큰이 만료되었습니다. 재발급 받아주세요."),
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED.value(), "지원되지 않는 토큰입니다."),
-    NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND.value(), "토큰을 찾을 수 없습니다.")
-    ,TOKEN_NOT_MATCH(HttpStatus.BAD_REQUEST.value(), "토큰이 일치하지 않습니다."),
+    NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND.value(), "토큰을 찾을 수 없습니다."),
+    TOKEN_NOT_MATCH(HttpStatus.BAD_REQUEST.value(), "토큰이 일치하지 않습니다."),
 
     // game
     GAME_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "게임을 찾을 수 없습니다."),
@@ -48,15 +48,24 @@ public enum ErrorCode {
     PARTICIPANT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "참가한 게임을 찾을 수 없습니다."),
     CANCELLATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "참가 취소가 불가능한 상태입니다."),
 
-    ,ALREADY_REPORTED_USER(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.")
+
+
+
 
     // gameCreator
 
 
     // report
-    ALREADY_REPORTED(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.");
-    ;
+    ALREADY_REPORTED_USER(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다."),
+    REPORT_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "자기 자신은 신고가 안됩니다."),
+    REPORT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "신고 내역을 찾을 수 없습니다."),
 
+
+    // 블랙리스트
+    ACCESS_DENIED(HttpStatus.UNAUTHORIZED.value(), "알 수 없는 이유로 요청이 거절되었습니다."),
+    BAN_FOR_10DAYS(HttpStatus.BAD_REQUEST.value(), "10일 후에 다시 이용 가능합니다."),
+    ALREADY_BLACK_USER(HttpStatus.BAD_REQUEST.value(), "이미 등록된 블랙리스트 유저입니다."),
+    NOT_BLACKLIST(HttpStatus.BAD_REQUEST.value(), "블랙 리스트 유저가 아닙니다.");
 
     private final int httpStatus;
     private final String description;
