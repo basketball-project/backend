@@ -5,6 +5,7 @@ import com.example.basketballmatching.auth.dto.SignInDto;
 import com.example.basketballmatching.auth.dto.SignUpDto;
 import com.example.basketballmatching.auth.dto.TokenDto;
 import com.example.basketballmatching.auth.service.AuthService;
+import com.example.basketballmatching.global.commonResponse.ApiResponseFactory;
 import com.example.basketballmatching.global.dto.SendMailRequest;
 import com.example.basketballmatching.global.dto.VerifyMailRequest;
 import com.example.basketballmatching.global.service.MailService;
@@ -36,6 +37,8 @@ public class AuthController {
 
     private final BlackListService blackListService;
 
+    private final ApiResponseFactory apiResponseFactory;
+
     @PostMapping
     public ResponseEntity<?> signUpMember(@RequestBody SignUpDto request) {
 
@@ -50,8 +53,10 @@ public class AuthController {
 
     @PostMapping("/mail/certification")
     public ResponseEntity<?> sendCertificationMail(@RequestBody SendMailRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(mailService.sendAuthMail(request.getEmail()));
+
+        mailService.sendAuthMail(request.getEmail());
+
+        return ResponseEntity.ok().body(apiResponseFactory.createSuccessResponse("이메일 전송 완료"));
     }
 
     @PostMapping("/mail/verify")

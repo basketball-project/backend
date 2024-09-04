@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -36,7 +37,8 @@ public class MailService {
     private static final String PASSWORD_SUBJECT = "임시 비밀번호 입니다.";
 
 
-    public SendMailResponse sendAuthMail(String email) {
+    @Async
+    public void sendAuthMail(String email) {
 
         String code = createRandomCode();
 
@@ -56,7 +58,7 @@ public class MailService {
             mimeMessageHelper.setSubject("회원가입 이메일 인증코드입니다.");
 
             String msg = "<div style='margin:20px;'>"
-                    + "<h1> 안녕하세요 농구 매칭 서비스입니다. </h1>"
+                    + "<h1> 안녕하세요 HoopsMate입니다. </h1>"
                     + "<br>"
                     + "<p>아래 코드를 입력해주세요<p>"
                     + "<br>"
@@ -79,10 +81,6 @@ public class MailService {
             throw new CustomException(INTERNAL_SERVER_ERROR);
         }
 
-        return SendMailResponse.builder()
-                .email(email)
-                .code(code)
-                .build();
 
     }
 
