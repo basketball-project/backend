@@ -30,6 +30,7 @@
 > - MySQL
 > - Redis
 > - OAuth2
+> - QueryDsl
 > - AWS
 >   - EC2
 >   - RDS
