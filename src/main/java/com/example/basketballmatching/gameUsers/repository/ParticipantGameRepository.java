@@ -15,6 +15,13 @@ public interface ParticipantGameRepository extends JpaRepository<ParticipantGame
 
      boolean existsByUserEntity_UserIdAndGameEntity_GameId(Integer userId, Integer gameId);
 
+     boolean existsByUserEntity_UserIdAndStatus(Integer userId, ParticipantGameStatus status);
+
      Optional<ParticipantGame> findByUserEntityAndGameEntity(UserEntity user, GameEntity game);
+
+
+     Optional<List<ParticipantGame>> findByUserEntity_UserIdAndStatus(Integer userId, ParticipantGameStatus status);
+
+
 }
 
