@@ -40,6 +40,8 @@ public enum ErrorCode {
 
     ALREADY_GAME_CREATED(HttpStatus.BAD_REQUEST.value(), "설정한 경기 시작 시간 30분전 ~ 30분후 사이에"
             + "이미 열린 경기가 있습니다.")
+    // game
+    ,GAME_NOT_FOUND(HttpStatus.BAD_REQUEST.value(),"게임을 찾을 수 없습니다.")
     ;
 
 

@@ -9,19 +9,22 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 @Entity(name = "game")
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class GameEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private int gameId;
+    private Integer gameId;
 
     @Column(nullable = false)
     private String title;
@@ -54,6 +57,12 @@ public class GameEntity {
 
     @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
+    private Double latitude;
+
+    @Column(nullable = false)
+    private Double longitude;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

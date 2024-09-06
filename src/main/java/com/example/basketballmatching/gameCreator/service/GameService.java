@@ -92,4 +92,17 @@ public class GameService {
 
         return GameDto.CreateResponse.toDto(gameEntity);
     }
+
+
+    /**
+     * 경기 상세 조회
+     */
+    public GameDto.DetailResponse getGameDetail(Integer gameId) {
+        GameEntity game = gameRepository.findByGameIdAndDeletedDateTimeNull(gameId)
+                .orElseThrow(() -> new CustomException(GAME_NOT_FOUND));
+
+
+
+        return GameDto.DetailResponse.toDto(game);
+    }
 }
