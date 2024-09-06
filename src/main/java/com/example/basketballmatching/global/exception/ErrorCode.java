@@ -38,8 +38,19 @@ public enum ErrorCode {
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND.value(), "토큰을 찾을 수 없습니다.")
     ,TOKEN_NOT_MATCH(HttpStatus.BAD_REQUEST.value(), "토큰이 일치하지 않습니다."),
 
+    NOT_AFTER_THIRTY_MINUTE(HttpStatus.BAD_REQUEST.value(), "경기 시작 시간이 현재 시간의 30분 이후 이면 "
+            + "경기 생성 가능 합니다."),
+
+    ALREADY_GAME_CREATED(HttpStatus.BAD_REQUEST.value(), "설정한 경기 시작 시간 30분전 ~ 30분후 사이에"
+            + "이미 열린 경기가 있습니다.")
     // game
-    GAME_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "게임을 찾을 수 없습니다."),
+    ,GAME_NOT_FOUND(HttpStatus.BAD_REQUEST.value(),"게임을 찾을 수 없습니다.")
+
+
+
+
+    // game
+    
     FULL_PEOPLE_GAME(HttpStatus.BAD_REQUEST.value(),"신청 가능한 인원이 초과되어 더 이상 신청할 수 없습니다."),
     OVER_TIME_GAME(HttpStatus.BAD_REQUEST.value(), "신청 가능한 시간이 이미 지났습니다. 더 이상 신청할 수 없습니다."),
     ONLY_FEMALE_GAME(HttpStatus.BAD_REQUEST.value(), "여성만 신청 가능한 경기 입니다."),
