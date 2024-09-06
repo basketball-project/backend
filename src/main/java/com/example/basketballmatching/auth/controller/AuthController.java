@@ -1,5 +1,6 @@
 package com.example.basketballmatching.auth.controller;
 
+import com.example.basketballmatching.admin.service.BlackListService;
 import com.example.basketballmatching.auth.dto.SignInDto;
 import com.example.basketballmatching.auth.dto.SignUpDto;
 import com.example.basketballmatching.auth.dto.TokenDto;
@@ -33,10 +34,18 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final BlackListService blackListService;
+
     @PostMapping
     public ResponseEntity<?> signUpMember(@RequestBody SignUpDto request) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signUp(request));
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> signUpAdmin(@RequestBody SignUpDto request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signUpManager(request));
     }
 
     @PostMapping("/mail/certification")
@@ -55,6 +64,8 @@ public class AuthController {
     public ResponseEntity<?> signIn(
             @RequestBody @Validated SignInDto.Request request
             ) {
+
+        blackListService.checkBlackList(request.getLoginId());
 
         UserDto userDto = authService.LogInUser(request);
 

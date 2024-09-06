@@ -68,6 +68,35 @@ public class AuthService {
 
     }
 
+    public SignUpDto signUpManager(SignUpDto request) {
+        if (userRepository.existsByEmailAndDeletedAtNull(request.getEmail())) {
+            throw new CustomException(ALREADY_EXIST_USER);
+        }
+
+        if (userRepository.existsByLoginIdAndDeletedAtNull(request.getLoginId())) {
+            throw new CustomException(ALREADY_EXIST_LOGINID);
+        }
+
+
+        UserEntity save = userRepository.save(
+                UserEntity.builder()
+                        .loginId(request.getLoginId())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .email(request.getEmail())
+                        .name(request.getName())
+                        .nickname(request.getNickname())
+                        .birth(LocalDate.now())
+                        .userType(UserType.ADMIN)
+                        .genderType(GenderType.valueOf(request.getGenderType()))
+                        .position(Position.valueOf(request.getPosition()))
+                        .createdAt(LocalDateTime.now())
+                        .build()
+        );
+
+        return SignUpDto.fromEntity(save);
+
+    }
+
     public UserDto LogInUser(SignInDto.Request request) {
         UserEntity user = userRepository.findByLoginIdAndDeletedAtNull(request.getLoginId())
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));

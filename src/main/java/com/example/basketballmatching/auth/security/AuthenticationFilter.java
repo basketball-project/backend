@@ -1,6 +1,7 @@
 package com.example.basketballmatching.auth.security;
 
 
+import com.example.basketballmatching.admin.service.BlackListService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -27,6 +28,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
+
+    private final BlackListService blackListService;
 
     private final TokenProvider tokenProvider;
 
@@ -62,6 +65,20 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
                 log.info(String.format("[%s] -> %s", tokenProvider.getUsername(accessToken), request.getRequestURI()));
 
+                try {
+
+                    blackListService.checkBlackList(tokenProvider.getUsername(accessToken));
+
+                } catch (Exception e) {
+                    setUnauthorizedResponse(response, e.getMessage());
+                    return;
+                }
+
+                log.info(String.format("[%s] -> %s",
+                        tokenProvider.getUsername(accessToken),
+
+                        request.getRequestURI()));
+
             }
         } catch (ExpiredJwtException e) {
             log.warn("에러 메세지 : " + e.getMessage());
@@ -78,6 +95,20 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return token.substring(TOKEN_PREFIX.length());
         }
         return null;
+    }
+
+    private void setUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        String errorMessage = objectMapper.writeValueAsString(
+                Map.of("error", "Unauthorized", "message", message)
+        );
+
+        response.getWriter().write(errorMessage);
+
     }
 
 

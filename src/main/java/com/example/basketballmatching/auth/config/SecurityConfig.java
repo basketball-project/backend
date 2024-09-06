@@ -2,11 +2,13 @@ package com.example.basketballmatching.auth.config;
 
 
 import com.example.basketballmatching.auth.security.AuthenticationFilter;
+import com.example.basketballmatching.auth.security.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,10 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
 
     private final AuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
 
     @Bean
@@ -38,10 +42,12 @@ public class SecurityConfig {
                 .headers(header -> header
                         .frameOptions(FrameOptionsConfig::disable))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/h2-console/**").permitAll() // H2 콘솔에 대한 접근 허용
+                        .requestMatchers("/h2-console/**").permitAll()// H2 콘솔에 대한 접근 허용
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter,
+                        AuthenticationFilter.class);
         return httpSecurity.build();
     }
 
