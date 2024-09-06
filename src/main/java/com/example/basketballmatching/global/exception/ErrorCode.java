@@ -20,6 +20,8 @@ public enum ErrorCode {
     INVALID_INPUT(HttpStatus.BAD_REQUEST.value(), "필수 입력 값이 누락되었습니다."),
     INVALID_PATTERN(HttpStatus.BAD_REQUEST.value(), "형식에 맞게 입력 해야합니다."),
     MAIL_SEND_FAIL(HttpStatus.BAD_REQUEST.value(), "이메일 전송에 실패하였습니다."),
+    ALREADY_EXIST_LOGINID(HttpStatus.BAD_REQUEST.value(), "이미 사용중인 아이디 입니다."),
+    PRECEED_SIGNUP(HttpStatus.BAD_REQUEST.value(), "회원 가입을 먼저 진행해주세요."),
 
     // server
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다."),
@@ -35,6 +37,7 @@ public enum ErrorCode {
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED.value(), "지원되지 않는 토큰입니다."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND.value(), "토큰을 찾을 수 없습니다.")
     ,TOKEN_NOT_MATCH(HttpStatus.BAD_REQUEST.value(), "토큰이 일치하지 않습니다."),
+
     NOT_AFTER_THIRTY_MINUTE(HttpStatus.BAD_REQUEST.value(), "경기 시작 시간이 현재 시간의 30분 이후 이면 "
             + "경기 생성 가능 합니다."),
 
@@ -42,9 +45,28 @@ public enum ErrorCode {
             + "이미 열린 경기가 있습니다.")
     // game
     ,GAME_NOT_FOUND(HttpStatus.BAD_REQUEST.value(),"게임을 찾을 수 없습니다.")
+
+
+
+
+    // game
+    
+    FULL_PEOPLE_GAME(HttpStatus.BAD_REQUEST.value(),"신청 가능한 인원이 초과되어 더 이상 신청할 수 없습니다."),
+    OVER_TIME_GAME(HttpStatus.BAD_REQUEST.value(), "신청 가능한 시간이 이미 지났습니다. 더 이상 신청할 수 없습니다."),
+    ONLY_FEMALE_GAME(HttpStatus.BAD_REQUEST.value(), "여성만 신청 가능한 경기 입니다."),
+    ONLY_MALE_GAME(HttpStatus.BAD_REQUEST.value(), "남성만 신청 가능한 경기 입니다."),
+    ALREADY_PARTICIPANT_USER(HttpStatus.BAD_REQUEST.value(), "이미 신청한 유저입니다."),
+    PARTICIPANT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "참가한 게임을 찾을 수 없습니다."),
+    CANCELLATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "참가 취소가 불가능한 상태입니다."),
+
+    ,ALREADY_REPORTED_USER(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.")
+
+    // gameCreator
+
+
+    // report
+    ALREADY_REPORTED(HttpStatus.BAD_REQUEST.value(), "이미 신고한 유저입니다.");
     ;
-
-
 
 
     private final int httpStatus;

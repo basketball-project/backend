@@ -96,7 +96,7 @@ public class OAuth2Service {
         log.info("카카오 유저 정보 등록 성공");
         SignInDto.Request logInDto = kakaoUserLogin(loginId);
         log.info("카카오 로그인 성공");
-        return authService.signIn(logInDto);
+        return authService.LogInUser(logInDto);
 
 
     }

@@ -24,6 +24,11 @@ public class QGameEntity extends EntityPathBase<GameEntity> {
 
     public final StringPath address = createString("address");
 
+
+
+    public final NumberPath<Integer> applicantNum = createNumber("applicantNum", Integer.class);
+
+
     public final EnumPath<com.example.basketballmatching.gameCreator.type.CityName> cityName = createEnum("cityName", com.example.basketballmatching.gameCreator.type.CityName.class);
 
     public final StringPath content = createString("content");
@@ -34,6 +39,10 @@ public class QGameEntity extends EntityPathBase<GameEntity> {
 
     public final DateTimePath<java.time.LocalDateTime> deletedDate = createDateTime("deletedDate", java.time.LocalDateTime.class);
 
+
+    public final DateTimePath<java.time.LocalDateTime> createdDateTime = createDateTime("createdDateTime", java.time.LocalDateTime.class);
+
+
     public final DateTimePath<java.time.LocalDateTime> deletedDateTime = createDateTime("deletedDateTime", java.time.LocalDateTime.class);
 
     public final EnumPath<com.example.basketballmatching.gameCreator.type.FieldStatus> fieldStatus = createEnum("fieldStatus", com.example.basketballmatching.gameCreator.type.FieldStatus.class);
@@ -42,15 +51,31 @@ public class QGameEntity extends EntityPathBase<GameEntity> {
 
     public final EnumPath<com.example.basketballmatching.gameCreator.type.Gender> gender = createEnum("gender", com.example.basketballmatching.gameCreator.type.Gender.class);
 
+
     public final NumberPath<Long> headCount = createNumber("headCount", Long.class);
 
     public final EnumPath<com.example.basketballmatching.gameCreator.type.MatchFormat> matchFormat = createEnum("matchFormat", com.example.basketballmatching.gameCreator.type.MatchFormat.class);
+
+
+    public final NumberPath<Integer> headCount = createNumber("headCount", Integer.class);
+
+    public final NumberPath<Double> latitude = createNumber("latitude", Double.class);
+
+    public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
+
+    public final EnumPath<com.example.basketballmatching.gameCreator.type.MatchFormat> matchFormat = createEnum("matchFormat", com.example.basketballmatching.gameCreator.type.MatchFormat.class);
+
+    public final StringPath placeName = createString("placeName");
 
     public final DateTimePath<java.time.LocalDateTime> startDateTime = createDateTime("startDateTime", java.time.LocalDateTime.class);
 
     public final StringPath title = createString("title");
 
+
     public final com.example.basketballmatching.user.entity.QUserEntity userEntity;
+
+    public final com.example.basketballmatching.user.entity.QUserEntity user;
+
 
     public QGameEntity(String variable) {
         this(GameEntity.class, forVariable(variable), INITS);
@@ -70,7 +95,11 @@ public class QGameEntity extends EntityPathBase<GameEntity> {
 
     public QGameEntity(Class<? extends GameEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+
         this.userEntity = inits.isInitialized("userEntity") ? new com.example.basketballmatching.user.entity.QUserEntity(forProperty("userEntity")) : null;
+
+        this.user = inits.isInitialized("user") ? new com.example.basketballmatching.user.entity.QUserEntity(forProperty("user")) : null;
+
     }
 
 }
