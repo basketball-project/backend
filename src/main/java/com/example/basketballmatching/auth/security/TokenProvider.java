@@ -13,12 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -73,7 +76,7 @@ public class TokenProvider {
         Claims claims = Jwts.claims().setSubject(loginId);
 
         claims.put("email", email);
-        claims.put("userType", userType);
+        claims.put("roles", userType);
 
         return returnToken(claims, expireTime);
     }
@@ -142,13 +145,10 @@ public class TokenProvider {
     }
 
     public Authentication getAuthentication(String jwt) {
-        UserDetails userDetails = userService.loadUserByUsername(
-                getUsername(jwt));
+        UserDetails userDetails = userService.loadUserByUsername(getUsername(jwt));
 
         return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                "",
-                userDetails.getAuthorities()
+                userDetails, "", userDetails.getAuthorities()
         );
     }
 
